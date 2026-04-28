@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pib.rocks Eyes & Screen</title>
+    <link rel="stylesheet" href="style.css?v=5">
+    <!-- FontAwesome for the Fullscreen Icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- ROS2 Websocket Client (Roslibjs and its dependency EventEmmiter2) -->
+    <script src="js/eventemitter2.min.js"></script>
+    <script src="js/roslib.min.js"></script>
+</head>
+<body>
+    <!-- Top Controls -->
+    <div class="top-controls">
+        <div id="connection-status" class="status-indicator disconnected" title="ROS2 Connection Status"></div>
+        <button id="fullscreen-toggle" title="Toggle Fullscreen">
+            <i class="fa-solid fa-expand"></i>
+        </button>
+    </div>
+
+    <!-- Main Screensaver / Idle Mode Area -->
+    <div id="idle-container" class="container active">
+        <div class="eyes-wrapper">
+            <div id="left-eye" class="eye">
+                <!-- Inner lids for clipping/expression effects -->
+                <div class="eyelid top-lid"></div>
+                <div class="eyelid bottom-lid"></div>
+            </div>
+            <div id="right-eye" class="eye">
+                <div class="eyelid top-lid"></div>
+                <div class="eyelid bottom-lid"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Active Mode Container (for arbitrary HTML snippets) -->
+    <div id="active-container" class="container hidden">
+        <div id="snippet-container">
+            <!-- Dynamic HTML content injected here by ROS messages -->
+        </div>
+    </div>
+
+    <!-- Hangman Game Container -->
+    <div id="hangman-container" class="container hidden">
+        <div class="hangman-layout">
+            <div class="hangman-gallows">
+                <!-- SVG or div parts for hangman. 6 parts: head, body, left-arm, right-arm, left-leg, right-leg -->
+                <div class="gallows-pole"></div>
+                <div class="gallows-top"></div>
+                <div class="gallows-rope"></div>
+                <div class="hangman-part part-head"></div>
+                <div class="hangman-part part-body"></div>
+                <div class="hangman-part part-l-arm"></div>
+                <div class="hangman-part part-r-arm"></div>
+                <div class="hangman-part part-l-leg"></div>
+                <div class="hangman-part part-r-leg"></div>
+            </div>
+            <div class="hangman-ui">
+                <div id="hangman-status"></div>
+                <div id="hangman-word">_ _ _ _ _ _ _ _</div>
+                <div id="hangman-keyboard"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/eyes.js?v=2"></script>
+    <script src="js/hangman.js?v=1"></script>
+    <script src="js/ros_client.js?v=2"></script>
+    <script src="js/main.js?v=2"></script>
+</body>
+</html>
