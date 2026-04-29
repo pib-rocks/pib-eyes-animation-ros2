@@ -15,6 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     window.pibRosClientInstance = rosClient;
     window.pibHangman = new PibHangman();
+    window.pibDemoPanel = new PibDemoPanel(rosClient);
 
     rosClient.onHangmanStateReceived = (state) => {
         if (window.pibHangman) {
@@ -105,6 +106,10 @@ document.addEventListener('DOMContentLoaded', () => {
         '6': { mode: 'hangman' },
     };
     document.addEventListener('keydown', (e) => {
+        if (e.key === 'd' || e.key === 'D') {
+            window.pibDemoPanel.toggle();
+            return;
+        }
         const payload = KEY_PAYLOADS[e.key];
         if (!payload) return;
         // Switching INTO hangman should always start a fresh game, otherwise

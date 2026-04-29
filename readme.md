@@ -7,6 +7,7 @@ A browser-based display for the [pib robot](https://pib.rocks) that renders anim
 - **Animated eyes (idle mode)** — sprite-driven blinking and expression animation.
 - **Active mode** — injects arbitrary HTML snippets sent over ROS into the page.
 - **Hangman mode** — interactive 6–8 letter word game with on-screen keyboard and gallows.
+- **ROS2 demonstrator mode** — toggleable side panel that visualises the ROS node graph, message flow, a second ("spectator") subscriber, configurable network simulation (latency / drop / QoS), and plain-language explanations. See [DOCUMENTATION.md](DOCUMENTATION.md) for a full walkthrough.
 - **ROS2 bridge** — connects to `rosbridge_server` (or the included mock) at `ws://localhost:9090`.
 - **Fullscreen toggle** and a connection-status indicator.
 
@@ -14,14 +15,17 @@ A browser-based display for the [pib robot](https://pib.rocks) that renders anim
 
 ```
 pib-eyes-animation-ros2/
-├── index.html           # Main page, layouts for idle / active / hangman modes
+├── index.html           # Main page, layouts for idle / active / hangman modes + demo panel
 ├── style.css            # Styling and animations
 ├── mock_server.py       # Python mock ROS bridge + static file server
+├── readme.md            # This file
+├── DOCUMENTATION.md     # Architecture, ROS topics, demo mode walkthrough
 ├── js/
 │   ├── main.js          # Bootstrap, mode switching, keyboard shortcuts
 │   ├── eyes.js          # Eye animation logic
 │   ├── hangman.js       # Hangman UI logic
-│   ├── ros_client.js    # roslibjs wrapper, topic subscriptions
+│   ├── ros_client.js    # roslibjs wrapper, topic subscriptions, demo-mode hooks
+│   ├── demo_panel.js    # ROS2 demonstrator: graph, log, spectator, network sim
 │   ├── eventemitter2.min.js
 │   └── roslib.min.js
 └── files/
@@ -85,6 +89,16 @@ The same commands as the mock CLI are available in the browser:
 - `1` — active mode with sample HTML
 - `2` — idle eyes
 - `6` — start a fresh Hangman game
+- `d` — toggle the ROS2 demonstrator panel
+
+## Documentation
+
+See [DOCUMENTATION.md](DOCUMENTATION.md) for:
+
+- Architecture and module-by-module overview
+- ROS topic reference with payload schemas
+- Demo mode walkthrough (node graph, message log, spectator subscriber, network simulation, explain mode)
+- Extension points (adding new topics, modes, or demo features)
 
 ## License
 

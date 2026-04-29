@@ -12,7 +12,46 @@ class PibRosClient {
         // Publishers
         this.hangmanGuessPublisher = null;
 
+        // Demo-mode hooks: listeners receive every send/receive event;
+        // dispatchGate (when set) wraps the actual handler invocation so the
+        // demo panel can pause/step incoming dispatches.
+        this.eventListeners = [];
+        this.dispatchGate = null;
+
         this.init();
+    }
+
+    addEventListener(fn) {
+        this.eventListeners.push(fn);
+    }
+
+    emit(event) {
+        for (const fn of this.eventListeners) {
+            try { fn(event); } catch (e) { console.error(e); }
+        }
+    }
+
+    handleIncoming(topic, rawData, dispatchFn) {
+        const event = {
+            id: ++PibRosClient._nextId,
+            direction: 'in',
+            topic,
+            payload: rawData,
+            timestamp: Date.now(),
+            phase: 'received',
+        };
+        this.emit(event);
+
+        const runDispatch = () => {
+            this.emit({ ...event, phase: 'processed' });
+            try { dispatchFn(); } catch (e) { console.error(e); }
+        };
+
+        if (this.dispatchGate) {
+            this.dispatchGate(event, runDispatch);
+        } else {
+            runDispatch();
+        }
     }
 
     init() {
@@ -70,15 +109,10 @@ class PibRosClient {
         });
 
         cmdTopic.subscribe((message) => {
-            console.log('Received command: ' + message.data);
-            try {
+            this.handleIncoming('/pib/display_command', message.data, () => {
                 const payload = JSON.parse(message.data);
-                if (this.onCommandReceived) {
-                    this.onCommandReceived(payload);
-                }
-            } catch (e) {
-                console.error("Failed to parse JSON from ROS command:", e);
-            }
+                if (this.onCommandReceived) this.onCommandReceived(payload);
+            });
         });
 
         const hangmanStateTopic = new ROSLIB.Topic({
@@ -88,14 +122,10 @@ class PibRosClient {
         });
 
         hangmanStateTopic.subscribe((message) => {
-            try {
+            this.handleIncoming('/pib/hangman/state', message.data, () => {
                 const state = JSON.parse(message.data);
-                if (this.onHangmanStateReceived) {
-                    this.onHangmanStateReceived(state);
-                }
-            } catch (e) {
-                console.error("Failed to parse JSON from Hangman state:", e);
-            }
+                if (this.onHangmanStateReceived) this.onHangmanStateReceived(state);
+            });
         });
 
         this.hangmanGuessPublisher = new ROSLIB.Topic({
@@ -113,17 +143,32 @@ class PibRosClient {
 
     publishHangmanGuess(letter) {
         if (!this.connected || !this.hangmanGuessPublisher) return;
-        const msg = new ROSLIB.Message({
-            data: letter
+        this.hangmanGuessPublisher.publish(new ROSLIB.Message({ data: letter }));
+        this.emit({
+            id: ++PibRosClient._nextId,
+            direction: 'out',
+            topic: '/pib/hangman/guess',
+            payload: letter,
+            timestamp: Date.now(),
+            phase: 'sent',
         });
-        this.hangmanGuessPublisher.publish(msg);
     }
 
     publishHangmanReset() {
         if (!this.connected || !this.hangmanResetPublisher) return;
         this.hangmanResetPublisher.publish(new ROSLIB.Message({ data: '' }));
+        this.emit({
+            id: ++PibRosClient._nextId,
+            direction: 'out',
+            topic: '/pib/hangman/reset',
+            payload: '',
+            timestamp: Date.now(),
+            phase: 'sent',
+        });
     }
 }
+
+PibRosClient._nextId = 0;
 
 // Global scope
 window.PibRosClient = PibRosClient;

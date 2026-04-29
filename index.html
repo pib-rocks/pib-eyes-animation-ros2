@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pib.rocks Eyes & Screen</title>
-    <link rel="stylesheet" href="style.css?v=5">
+    <link rel="stylesheet" href="style.css?v=7">
     <!-- FontAwesome for the Fullscreen Icon -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- ROS2 Websocket Client (Roslibjs and its dependency EventEmmiter2) -->
@@ -65,9 +65,92 @@
         </div>
     </div>
 
+    <!-- ROS2 Demo Panel (toggle with 'd') -->
+    <div id="demo-panel">
+        <div class="demo-section demo-graph-section">
+            <div class="demo-section-title">Node Graph</div>
+            <div class="demo-graph">
+                <div class="demo-node" data-node="browser">
+                    <div class="demo-node-label">browser</div>
+                    <div class="demo-node-sub">roslibjs</div>
+                </div>
+                <div class="demo-arrow"></div>
+                <div class="demo-node" data-node="rosbridge">
+                    <div class="demo-node-label">rosbridge</div>
+                    <div class="demo-node-sub">ws://:9090</div>
+                </div>
+                <div class="demo-arrow"></div>
+                <div class="demo-node" data-node="hangman_node">
+                    <div class="demo-node-label">hangman_node</div>
+                    <div class="demo-node-sub">Python</div>
+                </div>
+                <div class="demo-arrow demo-arrow-spectator"></div>
+                <div class="demo-node demo-node-spectator" data-node="spectator">
+                    <div class="demo-node-label">spectator</div>
+                    <div class="demo-node-sub">2nd subscriber</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="demo-section demo-spectator-section">
+            <div class="demo-section-title">Spectator (read-only subscriber to /pib/hangman/state)</div>
+            <div id="spectator-card" class="spectator-card">
+                <div class="spectator-head">
+                    <span id="spectator-dot" class="spec-dot"></span>
+                    <span class="spectator-label">spectator_node</span>
+                    <span id="spectator-status-text" class="spectator-status-text"></span>
+                </div>
+                <div id="spectator-word" class="spectator-word">_ _ _ _</div>
+                <div class="spectator-foot">
+                    <span>wrong: <span id="spectator-wrong">0</span>/6</span>
+                    <span id="spectator-guessed" class="spectator-guessed"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="demo-section demo-sim-section">
+            <div class="demo-section-title">Network Simulation (main subscriber only)</div>
+            <div class="sim-row">
+                <label>Latency <span id="sim-latency-val">0 ms</span></label>
+                <input type="range" id="sim-latency" min="0" max="2000" step="50" value="0">
+            </div>
+            <div class="sim-row">
+                <label>Drop rate <span id="sim-drop-val">0%</span></label>
+                <input type="range" id="sim-drop" min="0" max="80" step="5" value="0">
+            </div>
+            <div class="sim-row sim-qos-row">
+                <label>QoS reliability</label>
+                <div class="sim-qos">
+                    <button id="sim-qos-reliable" class="active">Reliable</button>
+                    <button id="sim-qos-besteffort">Best Effort</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="demo-controls">
+            <button id="demo-pause">Pause</button>
+            <button id="demo-step" disabled>Step</button>
+            <button id="demo-clear">Clear</button>
+            <button id="demo-explain" title="Toggle plain-language explanations on log entries">Explain</button>
+            <span id="demo-counter">
+                <span id="demo-counter-msgs">0 msgs</span>
+                <span class="demo-counter-sep">·</span>
+                <span id="demo-counter-rate">0/s</span>
+                <span class="demo-counter-sep">·</span>
+                <span id="demo-counter-bytes">0 B</span>
+            </span>
+        </div>
+
+        <div class="demo-section demo-log-section">
+            <div class="demo-section-title">Message Flow</div>
+            <div id="demo-log"></div>
+        </div>
+    </div>
+
     <script src="js/eyes.js?v=2"></script>
     <script src="js/hangman.js?v=1"></script>
-    <script src="js/ros_client.js?v=2"></script>
-    <script src="js/main.js?v=2"></script>
+    <script src="js/ros_client.js?v=3"></script>
+    <script src="js/demo_panel.js?v=2"></script>
+    <script src="js/main.js?v=3"></script>
 </body>
 </html>
